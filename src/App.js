@@ -1,13 +1,13 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Builder from './Builder.js'
+import MegaBuilder from './MegaBuilder.js'
 
 function App() {
-  const names = ['A','B','C','D']
+  const names = ['A','B','C','D','E']
   return (
     <div className="App">
-      <Builder names={names}/>
+      <MegaBuilder names={names}/>
     </div>
   );
 }
