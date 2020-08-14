@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useReducer } from 'react';
+import React, { useContext, useEffect, useState, useReducer } from 'react';
 import { Box, Flex } from 'rebass'
 import Select from 'react-select'
 
-export default function MiniBuilder({names}) {
+export default function MiniBuilder({index, names, handleConjunct}) {
   const initialState = {
     disableNames: false,
     disableQuantifier: false,
@@ -11,13 +11,13 @@ export default function MiniBuilder({names}) {
     quantifier:null,
     number:null,
     predicate:null,
-    connective:null,
   }
+  const [statement, setStatement] = useState(null)
+
   const reducer = (state, action) => {
     switch(action.type){
       case 'names':
         const result = action.value ? action.value.map(x => x.value) : []
-        console.log(result);
         return {
           ...state,
           names: result,
@@ -41,6 +41,7 @@ export default function MiniBuilder({names}) {
               disableNames: true,
               disableNumber: false,
               quantifier: action.value,
+              names: null,
             }
           case 'all':
           case 'some':
@@ -51,6 +52,7 @@ export default function MiniBuilder({names}) {
               disableNumber: true,
               quantifier: action.value,
               number: null,
+              names: null,
             }
           }
       case 'number':
@@ -59,15 +61,9 @@ export default function MiniBuilder({names}) {
           number: action.value,
         }
       case 'predicate':
-        console.log(action.value);
         return {
           ...state,
           predicate: action.value,
-        }
-      case 'connective':
-        return {
-          ...state,
-          connective: action.value,
         }
       default:
         return {
@@ -86,10 +82,21 @@ export default function MiniBuilder({names}) {
     })
   const nameOptions = names.map( (x) => {
     const result = {}
-    result['value'] = x.toLowerCase()
+    result['value'] = x
     result['label'] = x
     return result
     })
+
+  useEffect(()=> {
+    const statement = state.names ?
+          [state.predicate, state.names] :
+          state.number? [state.predicate, [state.quantifier, state.number]] :
+          [state.predicate, [state.quantifier]]
+    setStatement(statement)
+    handleConjunct(index, statement)
+  },[state])
+
+
   const quantifierOptions = [
                               {value: 'all', label: 'All'},
                               {value: 'some', label: 'Some'},
@@ -100,10 +107,10 @@ export default function MiniBuilder({names}) {
                               {value: 'more', label: 'More than'},
                             ]
   const roleOptions =     [
-                            {value: 'knight', label: 'Knight'},
-                            {value: 'knave', label: 'Knave'},
-                            {value: 'dragon', label: 'Dragon'},
-                            {value: 'monk', label: 'Monk'},
+                            {value: 'Knight', label: 'Knight'},
+                            {value: 'Knave', label: 'Knave'},
+                            {value: 'Dragon', label: 'Dragon'},
+                            {value: 'Monk', label: 'Monk'},
                           ]
   const adjectiveOptions =  [
                               {value: 'same', label: 'Same'},
@@ -113,21 +120,8 @@ export default function MiniBuilder({names}) {
                               {label: 'Roles', options: roleOptions},
                               {label: 'Adjectives', options: adjectiveOptions},
                             ]
-  const connectiveOptions =  [
-                              {value: 'AND', label: 'AND'},
-                              {value: 'OR', label: 'OR'},
-                              {value: 'NOT', label: 'NOT'},
-                              {value: 'IF', label: 'IF'},
-                              {value: 'IFF', label: 'IFF'},
-                            ]
   return (
-    <Box>
-      <Flex
-        sx={{
-          width:'100vw',
-          flexDirection:'column'
-        }}
-      >
+    <>
         <Select
           name='predicate'
           defaultValue = {[]}
@@ -168,20 +162,8 @@ export default function MiniBuilder({names}) {
             onChange={(e) => dispatch({ type: 'number', value: e ? e.value : null })}
           />
         }
-      </Flex>
-      <Select
-        name='connective'
-        defaultValue = {null}
-        isClearable={true}
-        options={connectiveOptions}
-        onChange={(e) => dispatch({ type: 'connective', value: e ? e.value : null })}
-      />
-    <p>{state.names} {state.quantifier} {state.number} {state.predicate} {state.connective}</p>
-    </Box>
+        <p>{state.names} {state.quantifier} {state.number} {state.predicate}</p>
+        <p>{index}</p>
+      </>
   )
 }
-
-// ['Knight', ['A']]
-// all atleast none
-// checkbox to negate?
-// use react selkect
