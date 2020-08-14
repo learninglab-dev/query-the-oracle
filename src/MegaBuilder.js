@@ -79,9 +79,103 @@ export default function MegaBuilder({names}) {
     return content
   }
 
+  const ConnectiveSelect = ({setConnective}) => {
+    return (<Select
+      name='connective'
+      defaultValue = {null}
+      isClearable={true}
+      options={connectiveOptions}
+      onChange={(e) => e ? setConnective(e.value) : setConnective(null)}
+    />)
+  }
+
+  // const Loop = ({connected}) => {
+  //   if (!connected) {
+  //     return (
+  //       <Flex
+  //         sx={{
+  //           flexDirection:'column'
+  //         }}>
+  //         <Nest index={1}/>
+  //       </Flex>
+  //     )
+  //   }
+  //   else {
+  //     return (
+  //       <Flex
+  //         sx={{
+  //           flexDirection:'column'
+  //         }}>
+  //         <ConnectiveSelect />
+  //         <Flex
+  //           sx={{
+  //             flexDirection:'row'
+  //           }}>
+  //           <Nest index={1}/>
+  //           <Nest index={2}/>
+  //         </Flex>
+  //       </Flex>
+  //     )
+  //   }
+  // }
+
+  // const OuterNest = ({index}) => {
+  //   const [connective, setConnective] = useState(null)
+  //   console.log('connective',connective);
+  //   useEffect(()=>{
+  //     console.log('set connective', connective);
+  //   },[connective])
+  //   return (
+  //     <>
+  //       {!connective
+  //         ? <InnerNest index={index} setConnective={setConnective} />
+  //         : <><InnerNest index={index} setConnective={setConnective} /><InnerNest index={index} setConnective={setConnective}/></>
+  //       }
+  //     </>
+  //   )
+  // }
+
+  const InnerNest = ({index}) => {
+    const [connective, setConnective] = useState(null)
+    const [children, setChildren] = useState([1])
+    useEffect(()=>{
+      connective ? setChildren([1,2]) : setChildren([1])
+      console.log('set connective', connective);
+      console.log('set children', children);
+    },[connective])
+
+    const nesting = children.map(index => {
+      return (
+        // call innernest from here? gets stuck in loop
+        <InnerNest />
+      )})
+
+    return (
+      <Flex
+        sx={{
+          width:'100%',
+          flexDirection:'column'
+        }}
+      >
+        <ConnectiveSelect setConnective={setConnective}/>
+        <MiniBuilder index={index} names={names} handleConjunct={null}/>
+        <Flex
+          sx={{
+            width:'100%',
+            flexDirection:'row'
+          }}
+        >
+          {nesting}
+        </Flex>
+      </Flex>
+    )
+  }
+
   return (
     <Box>
-      {builderLoop(connectives)}
+      {/*<Loop connected={false} />*/}
+      <InnerNest />
+      {/*{builderLoop(connectives)}*/}
     </Box>
 
   )

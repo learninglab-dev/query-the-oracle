@@ -93,7 +93,7 @@ export default function MiniBuilder({index, names, handleConjunct}) {
           state.number? [state.predicate, [state.quantifier, state.number]] :
           [state.predicate, [state.quantifier]]
     setStatement(statement)
-    handleConjunct(index, statement)
+    // handleConjunct(index, statement)
   },[state])
 
 
