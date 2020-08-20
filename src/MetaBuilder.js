@@ -80,6 +80,7 @@ export default function MetaBuilder({names, setStatement}) {
           name='statement'
           hideSelectedOptions={false}
           isMulti
+          placeholder='THE ORACLE AWAITS...'
           options={groupedOptions}
           value={state ? state.map(item => ({value: item.id, label: item.label})) : []}
           onChange={(e) => dispatch({ type: 'statement', value: e ? e : [],  timestamp: String(Date.now()).slice(5,) })}
